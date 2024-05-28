@@ -1,5 +1,5 @@
 const path = require('path');
-const posts = require('../db');
+const posts = require('../db/db.json');
 const fs = require('fs');
 
 const index = (req, res) => {
@@ -89,7 +89,7 @@ const createSlug = (title) => {
 
 
 const updatePosts = (newPost) => {
-  const filePath = path.join(__dirname, '../db.json');
+  const filePath = path.join(__dirname, '../db/db.json');
 
   fs.writeFileSync(filePath, JSON.stringify(newPost));
   posts = newPost;
