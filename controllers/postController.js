@@ -36,27 +36,63 @@ const show = (req, res) => {
   }
 };
 
-const create = (req, res) => {
-  res.format({
-    'text/html': function () {
-      res.send('<h1>Creazione nuovo post</h1>');
-    },
-    'default': function () {
-      res.status(406).send('Not Acceptable');
-    }
-  });
+// const create = (req, res) => {
+//   res.format({
+//     'text/html': function () {
+//       res.send('<h1>Creazione nuovo post</h1>');
+//     },
+//     'default': function () {
+//       res.status(406).send('Not Acceptable');
+//     }
+//   });
+// };
+
+
+const createSlug = (title) => {
+
+  const baseSlug = title.replaceAll(' ', '-').toLowerCase().replaceAll('/', '');
+
+  const slugs = posts.map(p => p.slug);
+
+  let counter = 1;
+
+  let slug = baseSlug;
+  while (slugs.includes(slug)) {
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  return slug;
 };
 
-const store = (req, res) => { 
-  const { title, slug, image, content, tags } = req.body;
-  if(!title || !slug || !image || !content || !tags) {
-    return res.status(400).send('All fields are required');
-  }else if(!req.files || !req.files.image.includes('image')) {
-    return res.status(400).send('Image is required');
-  }
+
+const updatePosts = (newPost) => {
+  const filePath = path.join(__dirname, '../db.json');
+
+  fs.writeFileSync(filePath, JSON.stringify(newPost));
+  posts = newPost;
+}
+
+const store = (req, res) => {
+
+  const { title, content, tags } = req.body;
   
-  const newPost = { title, slug, image: req.file.filename, content, tags: tags.split(',') };
-  posts.push(newPost);
+  if (!title || !content || !tags) {
+
+    return res.status(400).send('All fields are required');
+  } 
+
+  const slug = createSlug(title);
+
+  const newPost = {
+    title,
+    slug,
+    content,
+    tags,
+  };
+  
+  updatePosts([...posts, newPost]);
+
 
   res.format({
     html: function () {
@@ -66,7 +102,7 @@ const store = (req, res) => {
       res.json(newPost);
     }
   });
-}
+};
 
 
 const download = (req, res) => {
@@ -79,10 +115,30 @@ const download = (req, res) => {
   }
 };
 
+const deletePublicFile = (fileName) => {
+  const filePath = path.join(__dirname, '../public/images', fileName);
+  fs.unlinkSync(filePath);
+}
+
+const destroy = (req, res) => {
+  const {slug} = req.params;
+  const deletePost = posts.find(p => p.slug === slug);
+  if (!deletePost) {
+    return res.status(404).send(`Post ${slug} not found`);
+  } 
+
+  // deletePublicFile(deletePost.image);
+  updatePosts(posts.filter(p => p.slug !== deletePost.slug));
+
+  res.send(`Post ${slug} deleted`);
+}
+
 module.exports = {
   index,
   show,
-  create,
+  // create,
+  store,
   download,
-  store
+  destroy
+  
 };
