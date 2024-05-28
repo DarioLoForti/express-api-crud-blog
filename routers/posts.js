@@ -6,7 +6,7 @@ router.get('/', postController.index);
 router.post('/', postController.store);
 router.get('/create', postController.create);
 router.get('/:slug', postController.show);
-router.delete('/:slug', postController.destroy);
+// router.delete('/:slug', postController.destroy);
 router.get('/:slug/download', postController.download);
 
 module.exports = router;

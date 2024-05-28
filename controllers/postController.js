@@ -47,6 +47,28 @@ const create = (req, res) => {
   });
 };
 
+const store = (req, res) => { 
+  const { title, slug, image, content, tags } = req.body;
+  if(!title || !slug || !image || !content || !tags) {
+    return res.status(400).send('All fields are required');
+  }else if(!req.files || !req.files.image.includes('image')) {
+    return res.status(400).send('Image is required');
+  }
+  
+  const newPost = { title, slug, image: req.file.filename, content, tags: tags.split(',') };
+  posts.push(newPost);
+
+  res.format({
+    html: function () {
+      res.redirect(`/posts/${slug}`);
+    },
+    'default': function () {
+      res.json(newPost);
+    }
+  });
+}
+
+
 const download = (req, res) => {
   const post = posts.find(p => p.slug === req.params.slug);
   if (post) {
@@ -62,4 +84,5 @@ module.exports = {
   show,
   create,
   download,
+  store
 };
