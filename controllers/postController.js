@@ -30,7 +30,29 @@ const show = (req, res) => {
       image_url: `http://${req.headers.host}/${post.image}`,
       image_download_url: `http://${req.headers.host}/posts/${post.slug}/download`
     };
-    res.json(postWithUrls);
+
+    res.format({
+      'text/html': function () {
+        let html = `
+          <article>
+            <h2>${post.title}</h2>
+            <img width="500" src="/${post.image}" alt="${post.title}">
+            <p>${post.content}</p>
+            <h4>Tags:</h4>
+            <ul>`;
+        post.tags.forEach(tag => {
+          html += `<li>${tag}</li>`;
+        });
+        html += `</ul>
+          </article>
+          <a href="/posts">Back to posts</a>
+          <style>body{background-color: black; color: white;} p{font-size: 20px;}a{text-decoration: none; color: white;}</style>`;
+        res.send(html);
+      },
+      'default': function () {
+        res.json(postWithUrls);
+      }
+    });
   } else {
     res.status(404).send('Post not found');
   }

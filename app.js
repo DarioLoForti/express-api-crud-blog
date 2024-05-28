@@ -4,7 +4,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const postsRouter = require('./routers/posts');
 const errorsFormatter = require('./middlewares/errorsFormatter');
-
+const routersNotFound = require('./middlewares/routersNotFound');
 app.use(express.static('public/images'));
 
 app.get('/', (req, res) => {
@@ -12,6 +12,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/posts', postsRouter);
+
+app.use(routersNotFound);
 
 app.use(errorsFormatter);
 
