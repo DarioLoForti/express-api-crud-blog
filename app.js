@@ -6,7 +6,6 @@ const postsRouter = require('./routers/posts');
 const errorsFormatter = require('./middlewares/errorsFormatter');
 
 app.use(express.static('public/images'));
-app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
     res.send('<h1>Benvenuto nel mio blog!</h1><h1>I miei <a href="http://localhost:3000/posts">Post</a></h1><style>body{background-color: black; color: white;} a{text-decoration: none; color: white;}</style>');

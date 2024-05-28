@@ -78,9 +78,12 @@ const store = (req, res) => {
   const { title, content, tags } = req.body;
   
   if (!title || !content || !tags) {
-
+    req.file?.filename && deletePublicFile(req.file.filename);
     return res.status(400).send('All fields are required');
-  } 
+  } else if(!req.file || !req.file.mimetype.includes('image')) {
+    req.file?.filename && deletePublicFile(req.file.filename);
+    return res.status(400).send('Image is required');
+  }
 
   const slug = createSlug(title);
 
@@ -88,6 +91,7 @@ const store = (req, res) => {
     title,
     slug,
     content,
+    image: req.file.filename,
     tags,
   };
   
@@ -127,7 +131,7 @@ const destroy = (req, res) => {
     return res.status(404).send(`Post ${slug} not found`);
   } 
 
-  // deletePublicFile(deletePost.image);
+  deletePublicFile(deletePost.image);
   updatePosts(posts.filter(p => p.slug !== deletePost.slug));
 
   res.send(`Post ${slug} deleted`);
