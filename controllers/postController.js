@@ -147,11 +147,7 @@ const deletePublicFile = (fileName) => {
 }
 
 const destroy = (req, res) => {
-  const {slug} = req.params;
-  const deletePost = posts.find(p => p.slug === slug);
-  if (!deletePost) {
-    return res.status(404).send(`Post ${slug} not found`);
-  } 
+  const deletePost = req.post;
 
   deletePublicFile(deletePost.image);
   updatePosts(posts.filter(p => p.slug !== deletePost.slug));

@@ -6,6 +6,8 @@ const port = process.env.PORT || 3000;
 const morgan = require('morgan');
 const postsRouter = require('./routers/posts');
 
+app.use(express.urlencoded({ extended: true }));
+
 const errorsFormatter = require('./middlewares/errorsFormatter');
 const routersNotFound = require('./middlewares/routersNotFound');
 
